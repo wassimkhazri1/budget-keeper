@@ -125,8 +125,9 @@ console.log("--------search Term: ", searchTerm);
 
 
 console.log("*****This limit filtred: ", filteredCategoriesLimit);
-const remaining = filteredCategoriesLimit - totalAmount;
-
+const remaining = (filteredCategoriesLimit.toLocaleString() !== "") 
+  ? filteredCategoriesLimit - totalAmount 
+  : 0;
   return (
     <div className="mt-4">
       <div className="mb-4 d-flex justify-content-between align-items-center">
