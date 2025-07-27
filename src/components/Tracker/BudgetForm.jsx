@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import api from '../axiosConfig';
+import Transactions from "../../services/OperationService";
 import { Modal, Button, Form, Alert, Table, Pagination } from 'react-bootstrap';
 import { BiTrash, BiEdit } from 'react-icons/bi';
 
 const BudgetForm = () => {
   const [budgets, setBudgets] = useState([]);
+  const [totalBudget, setTotalBudget] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newBudget, setNewBudget] = useState({
     category: '',
     limit: ''
   });
+   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const token = localStorage.getItem('token');
@@ -58,6 +61,31 @@ const BudgetForm = () => {
     }
   };
 
+    useEffect(() => {
+    const fetchBudget = async () => {
+      try {
+        const budgetData = await Transactions.getBudgetByCategory('Total');
+        // console.log('Fetched budget data:', budgetData); // Vérifiez les données reçues
+        setTotalBudget(budgetData);
+      } catch (err) {
+        console.error('Error fetching budget:', err);
+        setError('Failed to load budget data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBudget();
+  }, []);
+  if (loading) return <div>Loading budget...</div>;
+  if (error) return <div>{error}</div>;
+  if (!totalBudget) return <div>No budget data available</div>;
+  const totalLimit = budgets
+  .filter(budget => budget.category !== 'Total') // Exclude 'Total' category
+  .reduce((sum, budget) => sum + budget.limit, 0); // Sum the remaining limits
+  const remaining = totalBudget.limit - totalLimit;
+ 
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewBudget(prev => ({
@@ -73,6 +101,9 @@ const BudgetForm = () => {
 
     if (!newBudget.category || !newBudget.limit) {
       setError('Veuillez remplir tous les champs');
+      return;
+    }else if(remaining <  newBudget.limit){
+      alert(`Veuillez saisir un montant qui est inferieur ou égal à ${remaining}`);
       return;
     }
 
@@ -115,7 +146,7 @@ const BudgetForm = () => {
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Budget Management</h2>
-        <Button variant="primary" onClick={() => setShowModal(true)}>
+        <Button variant="primary" onClick={() => {if(remaining > 0){setShowModal(true);} else{setError('You have enough amount to spend');}}}>
           Create a new budget
         </Button>
       </div>
@@ -123,6 +154,20 @@ const BudgetForm = () => {
       {error && <Alert variant="danger">{error}</Alert>}
       {success && <Alert variant="success">{success}</Alert>}
 
+
+
+    <div style={{ marginTop: "1.5rem" }}>
+      <h3>Budget Summary</h3>
+      <p>
+        💼 <strong>Total Budget:</strong> {totalBudget.limit} $
+      </p>
+      <p>
+        🧾 <strong>Total Limit:</strong> {totalLimit.toLocaleString()} $
+      </p>
+      <p style={{ color: remaining < 0 ? "red" : "green" }}>
+        🏦 <strong>Remaining:</strong> {remaining.toLocaleString()} $
+      </p>
+    </div>
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -212,7 +257,8 @@ const BudgetForm = () => {
                 onChange={handleInputChange}
                 step="0.01"
                 min="0"
-                placeholder="100.00"
+                // placeholder="100.00"
+                placeholder= {(remaining >=  newBudget.limit)? newBudget.limit : `Le montant saisi ne peut pas dépasser ${remaining}`}
                 required
               />
             </Form.Group>

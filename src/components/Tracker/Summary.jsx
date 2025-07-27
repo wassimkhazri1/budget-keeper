@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from "../axiosConfig"; // 👈 Remplace axios
+import Transactions from "../../services/OperationService";
 // const Summary = ({ budget, expenses }) => {
   const Summary = ({ expenses }) => {
   const totalSpent = expenses.reduce((acc, item) => acc + item.amount, 0);
@@ -7,32 +8,32 @@ import api from "../axiosConfig"; // 👈 Remplace axios
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const getBudgetByCategory = async (category) => {
-  try {
-    const token = localStorage.getItem('token');
+//   const getBudgetByCategory = async (category) => {
+//   try {
+//     const token = localStorage.getItem('token');
     
-    //  const response = await api.get(`/budgets/${category}`, {
-     const response = await api.get('/budgets/Total', {
+//     //  const response = await api.get(`/budgets/${category}`, {
+//      const response = await api.get('/budgets/Total', {
 
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching budget by category:', error);
-    throw error;
-  }
-};
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         'Content-Type': 'application/json'
+//       }
+//     });
+//     return response.data;
+//   } catch (error) {
+//     console.error('Error fetching budget by category:', error);
+//     throw error;
+//   }
+// };
 
 
 
   useEffect(() => {
     const fetchBudget = async () => {
       try {
-        const budgetData = await getBudgetByCategory('Total');
-        console.log('Fetched budget data:', budgetData); // Vérifiez les données reçues
+        const budgetData = await Transactions.getBudgetByCategory('Total');
+        // console.log('Fetched budget data:', budgetData); // Vérifiez les données reçues
         setBudget(budgetData);
       } catch (err) {
         console.error('Error fetching budget:', err);

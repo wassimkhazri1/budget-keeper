@@ -22,7 +22,7 @@ const ExpenseList = ({ expenses, onTransactionDeleted }) => {
         .includes(searchTerm.toLowerCase())
     );
   });
-console.log("--------search Term: ", searchTerm);
+// console.log("--------search Term: ", searchTerm);
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -33,7 +33,7 @@ console.log("--------search Term: ", searchTerm);
   const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  console.log("This search result: ", filteredTransactions);
+  // console.log("This search result: ", filteredTransactions);
 
   // Calcul du total des dépenses filtrées
   const totalAmount = filteredTransactions.reduce(
@@ -124,7 +124,7 @@ console.log("--------search Term: ", searchTerm);
   if (error) return <div className="text-danger">{error}</div>;
 
 
-console.log("*****This limit filtred: ", filteredCategoriesLimit);
+// console.log("*****This limit filtred: ", filteredCategoriesLimit);
 const remaining = (filteredCategoriesLimit.toLocaleString() !== "") 
   ? filteredCategoriesLimit - totalAmount 
   : 0;

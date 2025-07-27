@@ -1,4 +1,5 @@
 import axios from "axios";
+import api from "../components/axiosConfig";
 
 const API_URL = "http://localhost:8080/api/transactions";
 
@@ -43,12 +44,32 @@ const deleteTransaction = async (transactionId) => {
   }
 };
 
+  const getBudgetByCategory = async (category) => {
+  try {
+    const token = localStorage.getItem('token');
+    
+    //  const response = await api.get(`/budgets/${category}`, {
+     const response = await api.get('/budgets/Total', {
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching budget by category:', error);
+    throw error;
+  }
+};
+
 
 
 const  Transactions =  {
   getAllTransactions,
   createTransaction,
   deleteTransaction,
+  getBudgetByCategory,
 };
 
 export default   Transactions;
